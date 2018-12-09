@@ -1,6 +1,5 @@
 import java.util.Arrays;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.stream.Stream;
 
 /**
@@ -8,6 +7,7 @@ import java.util.stream.Stream;
  */
 public class ArrayStorage {
     Resume[] storage = new Resume[10000];
+    private int size = 0;
 
     void clear() {
         Arrays.fill(storage, null);
@@ -22,6 +22,7 @@ public class ArrayStorage {
             } else {
                 storage[currentSize + 1] = resume;
             }
+            size++;
         }
     }
 
@@ -38,6 +39,7 @@ public class ArrayStorage {
                     for (int j = i; j <= currentSize; j++) {
                         storage[j] = storage[j + 1];
                     }
+                    size--;
                     break;
                 }
             }
@@ -52,7 +54,7 @@ public class ArrayStorage {
     }
 
     int size() {
-        return (int) getResumes().count();
+        return size;
     }
 
     private Stream<Resume> getResumes() {
