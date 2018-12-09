@@ -31,17 +31,14 @@ public class ArrayStorage {
     }
 
     void delete(String uuid) {
-        Resume resume = search(uuid);
-        if (resume != null) {
-            int currentSize = size();
-            for (int i = 0; i < currentSize; i++) {
-                if (storage[i].uuid.equals(uuid)) {
-                    for (int j = i; j <= currentSize; j++) {
-                        storage[j] = storage[j + 1];
-                    }
-                    size--;
-                    break;
+        int currentSize = size();
+        for (int i = 0; i < currentSize; i++) {
+            if (storage[i].uuid.equals(uuid)) {
+                for (int j = i; j <= currentSize; j++) {
+                    storage[j] = storage[j + 1];
                 }
+                size--;
+                break;
             }
         }
     }
