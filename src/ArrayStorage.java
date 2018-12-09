@@ -14,9 +14,8 @@ public class ArrayStorage {
     }
 
     void save(Resume resume) {
-        Resume foundResume = search(resume.uuid);
         int currentSize = size();
-        if (foundResume == null && currentSize != storage.length) {
+        if (currentSize != storage.length) {
             if (currentSize == 0) {
                 storage[currentSize] = resume;
             } else {
@@ -27,7 +26,7 @@ public class ArrayStorage {
     }
 
     Resume get(String uuid) {
-        return search(uuid);
+        return getResumes().filter(resume -> resume.uuid.equals(uuid)).findFirst().orElse(null);
     }
 
     void delete(String uuid) {
@@ -56,9 +55,5 @@ public class ArrayStorage {
 
     private Stream<Resume> getResumes() {
         return Arrays.stream(storage).filter(Objects::nonNull);
-    }
-
-    private Resume search(String uuid) {
-        return getResumes().filter(resume -> resume.uuid.equals(uuid)).findFirst().orElse(null);
     }
 }
