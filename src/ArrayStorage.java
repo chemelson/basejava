@@ -1,6 +1,4 @@
 import java.util.Arrays;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * Array based storage for Resumes
@@ -10,32 +8,33 @@ public class ArrayStorage {
     private int size = 0;
 
     void clear() {
-        Arrays.fill(storage, null);
+        for (int i = 0; i < size; i++) {
+            storage[i] = null;
+        }
+        size = 0;
     }
 
     void save(Resume resume) {
-        int currentSize = size();
-        if (currentSize != storage.length) {
-            if (currentSize == 0) {
-                storage[currentSize] = resume;
-            } else {
-                storage[currentSize + 1] = resume;
-            }
+        if (size != storage.length) {
+            storage[size] = resume;
             size++;
         }
     }
 
     Resume get(String uuid) {
-        return getResumes().filter(resume -> resume.uuid.equals(uuid)).findFirst().orElse(null);
+        for (int i = 0; i < size; i++) {
+            if (storage[i].uuid.equals(uuid)) {
+                return storage[i];
+            }
+        }
+        return null;
     }
 
     void delete(String uuid) {
-        int currentSize = size();
-        for (int i = 0; i < currentSize; i++) {
+        for (int i = 0; i < size; i++) {
             if (storage[i].uuid.equals(uuid)) {
-                for (int j = i; j <= currentSize; j++) {
-                    storage[j] = storage[j + 1];
-                }
+                storage[i] = storage[size - 1];
+                storage[size - 1] = null;
                 size--;
                 break;
             }
@@ -46,14 +45,10 @@ public class ArrayStorage {
      * @return array, contains only Resumes in storage (without null)
      */
     Resume[] getAll() {
-        return getResumes().toArray(Resume[]::new);
+        return Arrays.copyOfRange(storage, 0, size);
     }
 
     int size() {
         return size;
-    }
-
-    private Stream<Resume> getResumes() {
-        return Arrays.stream(storage).filter(Objects::nonNull);
     }
 }
