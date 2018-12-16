@@ -4,7 +4,7 @@ import java.util.Arrays;
  * Array based storage for Resumes
  */
 public class ArrayStorage {
-    private Resume[] storage = new Resume[10000];
+    private Resume[] storage = new Resume[10_000];
     private int size = 0;
 
     void clear() {
@@ -14,7 +14,7 @@ public class ArrayStorage {
 
     void save(Resume resume) {
         if (size != storage.length) {
-            int index = getIndex(resume.uuid);
+            int index = getIndex(resume.getUuid());
             if (index == -1) {
                 storage[size] = resume;
                 size++;
@@ -27,7 +27,7 @@ public class ArrayStorage {
     }
 
     void update(Resume resume) {
-        int index = getIndex(resume.uuid);
+        int index = getIndex(resume.getUuid());
         if (index >= 0) {
             storage[index] = resume;
         } else {
@@ -63,16 +63,16 @@ public class ArrayStorage {
         return Arrays.copyOfRange(storage, 0, size);
     }
 
+    int size() {
+        return size;
+    }
+
     private int getIndex(String uuid) {
         for (int i = 0; i < size; i++) {
-            if (storage[i].uuid.equals(uuid)) {
+            if (storage[i].getUuid().equals(uuid)) {
                 return i;
             }
         }
         return -1;
-    }
-
-    int size() {
-        return size;
     }
 }
