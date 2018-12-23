@@ -14,7 +14,7 @@ public class SortedArrayStorage extends AbstractArrayStorage {
         } else if (size >= STORAGE_LIMIT) {
             System.out.println("Storage overflow");
         } else {
-            int position = Math.abs(index) - 1;
+            int position = -index - 1;
             if (size != 0) {
                 System.arraycopy(storage, position, storage, position + 1, size - position);
             }
@@ -48,13 +48,14 @@ public class SortedArrayStorage extends AbstractArrayStorage {
         if (index < 0) {
             System.out.println("Resume " + uuid + " not exist");
         } else {
-            if (size != 1) {
+            int lastIndex = size - 1;
+            if ((size == 1) || (index == lastIndex)) {
+                storage[lastIndex] = null;
+            } else {
                 System.arraycopy(storage, index + 1, storage, index, size - index + 1);
             }
-            storage[size - 1] = null;
             size--;
         }
-
     }
 
     @Override
