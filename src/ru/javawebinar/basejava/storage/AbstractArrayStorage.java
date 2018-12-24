@@ -32,6 +32,7 @@ public abstract class AbstractArrayStorage implements Storage {
             System.out.println("Storage overflow");
         } else {
             insert(index, r);
+            size++;
         }
     }
 
@@ -50,6 +51,7 @@ public abstract class AbstractArrayStorage implements Storage {
             System.out.println("Resume " + uuid + " not exist");
         } else {
             remove(index);
+            size--;
         }
     }
 
