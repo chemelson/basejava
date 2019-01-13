@@ -3,7 +3,9 @@ package ru.javawebinar.basejava.storage;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 public abstract class AbstractArrayStorageTest {
@@ -73,5 +75,26 @@ public abstract class AbstractArrayStorageTest {
     @Test(expected = NotExistStorageException.class)
     public void getNotExist() throws Exception {
         storage.get("dummy");
+    }
+
+    @Test(expected = ExistStorageException.class)
+    public void saveExist() throws Exception {
+        Resume resume = new Resume(UUID_1);
+        storage.save(resume);
+    }
+
+    @Test(expected = StorageException.class)
+    public void saveOverflow() {
+        try {
+            while (true) {
+                storage.save(new Resume());
+            }
+        } catch (StorageException ex) {
+            if (storage.size() < 10000) {
+                Assert.fail();
+            } else {
+                throw ex;
+            }
+        }
     }
 }
