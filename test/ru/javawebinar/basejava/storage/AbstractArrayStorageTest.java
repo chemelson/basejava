@@ -21,7 +21,7 @@ public abstract class AbstractArrayStorageTest {
 
     private Storage storage;
 
-    AbstractArrayStorageTest(Storage storage) {
+    protected AbstractArrayStorageTest(Storage storage) {
         this.storage = storage;
     }
 
@@ -48,8 +48,8 @@ public abstract class AbstractArrayStorageTest {
     public void update() throws Exception {
         Resume new_resume = new Resume(UUID_1);
         storage.update(new_resume);
-        Resume updated_resume = storage.get(UUID_1);
-        Assert.assertSame(updated_resume, new_resume);
+        Assert.assertSame(storage.get(UUID_1), new_resume);
+        Assert.assertEquals(3, storage.size());
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -61,6 +61,7 @@ public abstract class AbstractArrayStorageTest {
     public void save() throws Exception {
         storage.save(resume4);
         Assert.assertEquals(resume4, storage.get(UUID_4));
+        Assert.assertEquals(4, storage.size());
     }
 
     @Test(expected = ExistStorageException.class)
@@ -71,7 +72,7 @@ public abstract class AbstractArrayStorageTest {
     @Test(expected = StorageException.class)
     public void saveOverflow() {
         try {
-            while (storage.size() < 10000) {
+            while (storage.size() < AbstractArrayStorage.STORAGE_LIMIT) {
                 storage.save(new Resume());
             }
         } catch (StorageException ex) {
@@ -94,8 +95,7 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     public void get() throws Exception {
-        Resume resume = storage.get(UUID_1);
-        Assert.assertSame(resume1, resume);
+        Assert.assertSame(resume1, storage.get(UUID_1));
     }
 
     @Test(expected = NotExistStorageException.class)
@@ -105,9 +105,7 @@ public abstract class AbstractArrayStorageTest {
 
     @Test
     public void getAll() throws Exception {
-        Resume[] new_resumes = {new Resume(UUID_1), new Resume(UUID_2), new Resume(UUID_3)};
         Resume[] resumes = storage.getAll();
-        Assert.assertEquals(new_resumes.length, resumes.length);
-        Assert.assertArrayEquals(new_resumes, resumes);
+        Assert.assertEquals(storage.size(), resumes.length);
     }
 }
