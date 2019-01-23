@@ -1,8 +1,5 @@
 package ru.javawebinar.basejava.storage;
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.LinkedHashMap;
@@ -15,50 +12,6 @@ public class MapStorage extends AbstractStorage {
     protected Map<String, Resume> storage = new LinkedHashMap<>();
 
     @Override
-    public void update(Resume r) {
-        int index = getIndex(r.getUuid());
-        if (index < 0) {
-            throw new NotExistStorageException(r.getUuid());
-        } else {
-            storage.put(r.getUuid(), r);
-        }
-    }
-
-    @Override
-    public void save(Resume r) {
-        int index = getIndex(r.getUuid());
-        if (index >= 0) {
-            throw new ExistStorageException(r.getUuid());
-        } else if (size == STORAGE_LIMIT) {
-            throw new StorageException("Storage overflow", r.getUuid());
-        } else {
-            storage.put(r.getUuid(), r);
-            size++;
-        }
-    }
-
-    @Override
-    public Resume get(String uuid) {
-        Resume resume = storage.get(uuid);
-        if (resume == null) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            return resume;
-        }
-    }
-
-    @Override
-    public void delete(String uuid) {
-        boolean resumeExists = storage.containsKey(uuid);
-        if (!resumeExists) {
-            throw new NotExistStorageException(uuid);
-        } else {
-            storage.remove(uuid);
-            size--;
-        }
-    }
-
-    @Override
     public Resume[] getAll() {
         return storage.values().toArray(new Resume[size]);
     }
@@ -66,6 +19,28 @@ public class MapStorage extends AbstractStorage {
     @Override
     protected void clearStorage() {
         storage.clear();
+    }
+
+    @Override
+    protected void updateElement(Resume r, int index) {
+        storage.put(r.getUuid(), r);
+    }
+
+    @Override
+    protected void saveElement(Resume r, int index) {
+        storage.put(r.getUuid(), r);
+        size++;
+    }
+
+    @Override
+    protected Resume getElement(String uuid, int index) {
+        return storage.get(uuid);
+    }
+
+    @Override
+    protected void deleteElement(String uuid, int index) {
+        storage.remove(uuid);
+        size--;
     }
 
     @Override
