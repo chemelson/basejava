@@ -2,51 +2,56 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-public class MapStorage extends AbstractStorage {
+public class MapStorage extends AbstractStorage<String> {
 
-    protected Map<String, Resume> storage = new LinkedHashMap<>();
+    protected static final Map<String, Resume> storage = new LinkedHashMap<>();
 
     @Override
-    public Resume[] getAll() {
-        return storage.values().toArray(new Resume[size]);
+    protected String getSearchKey(String uuid) {
+        if (uuid == null) return null;
+        Resume r = storage.get(uuid);
+        return r == null ? null : r.getUuid();
     }
 
     @Override
-    protected void clearStorage() {
+    protected boolean isElementExist(String searchKey) {
+        return searchKey != null;
+    }
+
+    @Override
+    protected void updateElement(Resume r, String searchKey) {
+        storage.put(searchKey, r);
+    }
+
+    @Override
+    protected void saveElement(Resume r, String searchKey) {
+        storage.put(r.getUuid(), r);
+    }
+
+    @Override
+    protected Resume getElement(String searchKey) {
+        return storage.get(searchKey);
+    }
+
+    @Override
+    protected void deleteElement(String searchKey) {
+        storage.remove(searchKey);
+    }
+
+    @Override
+    public void clear() {
         storage.clear();
     }
 
     @Override
-    protected void updateElement(Resume r, int index) {
-        storage.put(r.getUuid(), r);
+    public Resume[] getAll() {
+        return storage.values().toArray(new Resume[0]);
     }
 
     @Override
-    protected void saveElement(Resume r, int index) {
-        storage.put(r.getUuid(), r);
-        size++;
-    }
-
-    @Override
-    protected Resume getElement(String uuid, int index) {
-        return storage.get(uuid);
-    }
-
-    @Override
-    protected void deleteElement(String uuid, int index) {
-        storage.remove(uuid);
-        size--;
-    }
-
-    @Override
-    protected int getIndex(String uuid) {
-        Resume resume = new Resume(uuid);
-        List<Resume> resumes = new LinkedList<>(storage.values());
-        return resumes.indexOf(resume);
+    public int size() {
+        return storage.size();
     }
 }

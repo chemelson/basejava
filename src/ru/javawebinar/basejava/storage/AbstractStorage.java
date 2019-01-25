@@ -3,66 +3,55 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-public abstract class AbstractStorage implements Storage {
-    protected static final int STORAGE_LIMIT = 10000;
-    protected int size = 0;
+public abstract class AbstractStorage<SK> implements Storage {
 
     public void update(Resume r) {
-        int index = getIndex(r.getUuid());
-        if (index < 0) {
-            throw new NotExistStorageException(r.getUuid());
-        }
-        updateElement(r, index);
+        SK searchKey = getExistingSearchKey(r.getUuid());
+        updateElement(r, searchKey);
     }
 
     public void save(Resume r) {
-        int index = getIndex(r.getUuid());
-        if (index >= 0) {
-            throw new ExistStorageException(r.getUuid());
-        } else if (size == STORAGE_LIMIT) {
-            throw new StorageException("Storage overflow", r.getUuid());
-        } else {
-            saveElement(r, index);
-        }
-    }
-
-    public Resume get(String uuid) {
-        int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-        return getElement(uuid, index);
+        SK searchKey = getNotExistingSearchKey(r.getUuid());
+        saveElement(r, searchKey);
     }
 
     public void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index < 0) {
+        SK searchKey = getExistingSearchKey(uuid);
+        deleteElement(searchKey);
+    }
+
+    public Resume get(String uuid) {
+        SK searchKey = getExistingSearchKey(uuid);
+        return getElement(searchKey);
+    }
+
+    private SK getExistingSearchKey(String uuid) {
+        SK searchKey = getSearchKey(uuid);
+        if (!isElementExist(searchKey)) {
             throw new NotExistStorageException(uuid);
         }
-        deleteElement(uuid, index);
+        return searchKey;
     }
 
-    public void clear() {
-        clearStorage();
-        size = 0;
+    private SK getNotExistingSearchKey(String uuid) {
+        SK searchKey = getSearchKey(uuid);
+        if (isElementExist(searchKey)) {
+            throw new ExistStorageException(uuid);
+        }
+        return searchKey;
     }
 
-    public int size() {
-        return size;
-    }
+    protected abstract SK getSearchKey(String uuid);
 
-    protected abstract void clearStorage();
+    protected abstract boolean isElementExist(SK searchKey);
 
-    protected abstract int getIndex(String uuid);
+    protected abstract void updateElement(Resume r, SK searchKey);
 
-    protected abstract void updateElement(Resume r, int index);
+    protected abstract void saveElement(Resume r, SK searchKey);
 
-    protected abstract void saveElement(Resume r, int index);
+    protected abstract Resume getElement(SK searchKey);
 
-    protected abstract Resume getElement(String uuid, int index);
-
-    protected abstract void deleteElement(String uuid, int index);
+    protected abstract void deleteElement(SK searchKey);
 }

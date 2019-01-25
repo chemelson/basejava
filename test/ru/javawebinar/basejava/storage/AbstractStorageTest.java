@@ -5,7 +5,6 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 public abstract class AbstractStorageTest {
@@ -19,7 +18,7 @@ public abstract class AbstractStorageTest {
     private static final Resume resume3 = new Resume(UUID_3);
     private static final Resume resume4 = new Resume(UUID_4);
 
-    private Storage storage;
+    protected Storage storage;
 
     protected AbstractStorageTest(Storage storage) {
         this.storage = storage;
@@ -67,19 +66,6 @@ public abstract class AbstractStorageTest {
     @Test(expected = ExistStorageException.class)
     public void saveExist() throws Exception {
         storage.save(resume1);
-    }
-
-    @Test(expected = StorageException.class)
-    public void saveOverflow() {
-        try {
-            while (storage.size() < AbstractArrayStorage.STORAGE_LIMIT) {
-                storage.save(new Resume());
-            }
-        } catch (StorageException ex) {
-            Assert.fail("Error on save before reaching storage limit.");
-        }
-        storage.save(new Resume());
-
     }
 
     @Test(expected = NotExistStorageException.class)
