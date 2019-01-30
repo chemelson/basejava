@@ -2,7 +2,6 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +49,7 @@ public class MapUuidStorage extends AbstractStorage {
     public List<Resume> getAllSorted() {
         return storage.values()
                 .stream()
-                .sorted(Comparator.comparing(Resume::getUuid))
+                .sorted(RESUME_COMPARATOR)
                 .collect(Collectors.toList());
     }
 
