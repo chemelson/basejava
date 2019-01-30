@@ -5,58 +5,56 @@ import ru.javawebinar.basejava.model.Resume;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ListStorage extends AbstractStorage<Integer> {
-
-    protected static final List<Resume> storage = new ArrayList<>(0);
+public class ListStorage extends AbstractStorage {
+    private List<Resume> list = new ArrayList<>();
 
     @Override
     protected Integer getSearchKey(String uuid) {
-        if (uuid == null) return -1;
-        for (int i = 0; i < storage.size(); i++) {
-            if (uuid.equals((storage.get(i).getUuid()))) {
+        for (int i = 0; i < list.size(); i++) {
+            if (list.get(i).getUuid().equals(uuid)) {
                 return i;
             }
         }
-        return -1;
+        return null;
     }
 
     @Override
-    protected boolean isElementExist(Integer searchKey) {
-        return searchKey >= 0;
+    protected boolean isExist(Object searchKey) {
+        return searchKey != null;
     }
 
     @Override
-    protected void updateElement(Resume r, Integer searchKey) {
-        storage.set(searchKey, r);
+    protected void doUpdate(Resume r, Object searchKey) {
+        list.set((Integer) searchKey, r);
     }
 
     @Override
-    protected void saveElement(Resume r, Integer searchKey) {
-        storage.add(r);
+    protected void doSave(Resume r, Object searchKey) {
+        list.add(r);
     }
 
     @Override
-    protected Resume getElement(Integer searchKey) {
-        return storage.get(searchKey);
+    protected Resume doGet(Object searchKey) {
+        return list.get((Integer) searchKey);
     }
 
     @Override
-    protected void deleteElement(Integer searchKey) {
-        storage.remove(searchKey.intValue());
+    protected void doDelete(Object searchKey) {
+        list.remove(((Integer) searchKey).intValue());
     }
 
     @Override
     public void clear() {
-        storage.clear();
+        list.clear();
     }
 
     @Override
     public Resume[] getAll() {
-        return storage.toArray(new Resume[0]);
+        return list.toArray(new Resume[list.size()]);
     }
 
     @Override
     public int size() {
-        return storage.size();
+        return list.size();
     }
 }

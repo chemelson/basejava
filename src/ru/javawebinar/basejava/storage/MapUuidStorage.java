@@ -2,11 +2,11 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.model.Resume;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-public class MapStorage extends AbstractStorage<String> {
-
-    protected static final Map<String, Resume> storage = new LinkedHashMap<>();
+public class MapUuidStorage extends AbstractStorage {
+    private Map<String, Resume> storage = new LinkedHashMap<>();
 
     @Override
     protected String getSearchKey(String uuid) {
@@ -14,27 +14,27 @@ public class MapStorage extends AbstractStorage<String> {
     }
 
     @Override
-    protected boolean isElementExist(String searchKey) {
-        return searchKey != null;
+    protected void doUpdate(Resume r, Object searchKey) {
+        storage.put((String) searchKey, r);
     }
 
     @Override
-    protected void updateElement(Resume r, String searchKey) {
-        storage.put(searchKey, r);
+    protected boolean isExist(Object searchKey) {
+        return storage.containsKey(searchKey);
     }
 
     @Override
-    protected void saveElement(Resume r, String searchKey) {
-        storage.put(r.getUuid(), r);
+    protected void doSave(Resume r, Object searchKey) {
+        storage.put((String) searchKey, r);
     }
 
     @Override
-    protected Resume getElement(String searchKey) {
+    protected Resume doGet(Object searchKey) {
         return storage.get(searchKey);
     }
 
     @Override
-    protected void deleteElement(String searchKey) {
+    protected void doDelete(Object searchKey) {
         storage.remove(searchKey);
     }
 
