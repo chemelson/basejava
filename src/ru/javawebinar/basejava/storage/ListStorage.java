@@ -3,15 +3,17 @@ package ru.javawebinar.basejava.storage;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class ListStorage extends AbstractStorage {
-    private List<Resume> list = new ArrayList<>();
+    private List<Resume> storage = new ArrayList<>();
 
     @Override
     protected Integer getSearchKey(String uuid) {
-        for (int i = 0; i < list.size(); i++) {
-            if (list.get(i).getUuid().equals(uuid)) {
+        for (int i = 0; i < storage.size(); i++) {
+            if (storage.get(i).getUuid().equals(uuid)) {
                 return i;
             }
         }
@@ -25,36 +27,38 @@ public class ListStorage extends AbstractStorage {
 
     @Override
     protected void doUpdate(Resume r, Object searchKey) {
-        list.set((Integer) searchKey, r);
+        storage.set((Integer) searchKey, r);
     }
 
     @Override
     protected void doSave(Resume r, Object searchKey) {
-        list.add(r);
+        storage.add(r);
     }
 
     @Override
     protected Resume doGet(Object searchKey) {
-        return list.get((Integer) searchKey);
+        return storage.get((Integer) searchKey);
     }
 
     @Override
     protected void doDelete(Object searchKey) {
-        list.remove(((Integer) searchKey).intValue());
+        storage.remove(((Integer) searchKey).intValue());
     }
 
     @Override
     public void clear() {
-        list.clear();
+        storage.clear();
     }
 
     @Override
-    public Resume[] getAll() {
-        return list.toArray(new Resume[list.size()]);
+    public List<Resume> getAllSorted() {
+        return storage.stream()
+                .sorted(Comparator.comparing(Resume::getUuid))
+                .collect(Collectors.toList());
     }
 
     @Override
     public int size() {
-        return list.size();
+        return storage.size();
     }
 }
