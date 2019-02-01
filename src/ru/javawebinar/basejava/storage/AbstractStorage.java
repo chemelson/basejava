@@ -6,8 +6,6 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 public abstract class AbstractStorage implements Storage {
 
@@ -26,26 +24,37 @@ public abstract class AbstractStorage implements Storage {
 
     protected abstract void doDelete(Object searchKey);
 
-    protected abstract Stream<Resume> getResumeStream();
+    protected abstract List<Resume> getResumeList();
 
+    @Override
     public void update(Resume resume) {
         Object searchKey = getExistedSearchKey(resume.getUuid());
         doUpdate(resume, searchKey);
     }
 
+    @Override
     public void save(Resume resume) {
         Object searchKey = getNotExistedSearchKey(resume.getUuid());
         doSave(resume, searchKey);
     }
 
+    @Override
     public void delete(String uuid) {
         Object searchKey = getExistedSearchKey(uuid);
         doDelete(searchKey);
     }
 
+    @Override
     public Resume get(String uuid) {
         Object searchKey = getExistedSearchKey(uuid);
         return doGet(searchKey);
+    }
+
+    @Override
+    public List<Resume> getAllSorted() {
+        List<Resume> resumes = getResumeList();
+        resumes.sort(RESUME_COMPARATOR);
+        return resumes;
     }
 
     private Object getExistedSearchKey(String uuid) {
@@ -62,11 +71,5 @@ public abstract class AbstractStorage implements Storage {
             throw new ExistStorageException(uuid);
         }
         return searchKey;
-    }
-
-    @Override
-    public List<Resume> getAllSorted() {
-        Stream<Resume> resumeStream = getResumeStream();
-        return resumeStream.sorted(RESUME_COMPARATOR).collect(Collectors.toList());
     }
 }

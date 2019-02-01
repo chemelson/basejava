@@ -4,7 +4,7 @@ import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
-import java.util.stream.Stream;
+import java.util.List;
 
 /**
  * Array based storage for Resumes
@@ -15,10 +15,12 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
     protected int size = 0;
 
+    @Override
     public int size() {
         return size;
     }
 
+    @Override
     public void clear() {
         Arrays.fill(storage, 0, size, null);
         size = 0;
@@ -46,6 +48,7 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
         size--;
     }
 
+    @Override
     public Resume doGet(Object index) {
         return storage[(Integer) index];
     }
@@ -56,13 +59,14 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected Stream<Resume> getResumeStream() {
-        return Arrays.stream(storage, 0, size);
+    protected List<Resume> getResumeList() {
+        return Arrays.asList(Arrays.copyOf(storage, size));
     }
 
     protected abstract void fillDeletedElement(int index);
 
     protected abstract void insertElement(Resume r, int index);
 
+    @Override
     protected abstract Integer getSearchKey(String uuid);
 }
