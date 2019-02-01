@@ -4,8 +4,7 @@ import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Array based storage for Resumes
@@ -26,23 +25,16 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     }
 
     @Override
-    protected void doUpdate(Resume r, Object index) {
-        storage[(Integer) index] = r;
+    protected void doUpdate(Resume resume, Object index) {
+        storage[(Integer) index] = resume;
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        return Arrays.stream(storage, 0, size)
-                .sorted(RESUME_COMPARATOR)
-                .collect(Collectors.toList());
-    }
-
-    @Override
-    protected void doSave(Resume r, Object index) {
+    protected void doSave(Resume resume, Object index) {
         if (size == STORAGE_LIMIT) {
-            throw new StorageException("Storage overflow", r.getUuid());
+            throw new StorageException("Storage overflow", resume.getUuid());
         } else {
-            insertElement(r, (Integer) index);
+            insertElement(resume, (Integer) index);
             size++;
         }
     }
@@ -61,6 +53,11 @@ public abstract class AbstractArrayStorage extends AbstractStorage {
     @Override
     protected boolean isExist(Object index) {
         return (Integer) index >= 0;
+    }
+
+    @Override
+    protected Stream<Resume> getResumeStream() {
+        return Arrays.stream(storage, 0, size);
     }
 
     protected abstract void fillDeletedElement(int index);

@@ -4,7 +4,7 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 public class ListStorage extends AbstractStorage {
     private List<Resume> storage = new ArrayList<>();
@@ -25,13 +25,13 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    protected void doUpdate(Resume r, Object searchKey) {
-        storage.set((Integer) searchKey, r);
+    protected void doUpdate(Resume resume, Object searchKey) {
+        storage.set((Integer) searchKey, resume);
     }
 
     @Override
-    protected void doSave(Resume r, Object searchKey) {
-        storage.add(r);
+    protected void doSave(Resume resume, Object searchKey) {
+        storage.add(resume);
     }
 
     @Override
@@ -50,10 +50,8 @@ public class ListStorage extends AbstractStorage {
     }
 
     @Override
-    public List<Resume> getAllSorted() {
-        return storage.stream()
-                .sorted(RESUME_COMPARATOR)
-                .collect(Collectors.toList());
+    protected Stream<Resume> getResumeStream() {
+        return storage.stream();
     }
 
     @Override
