@@ -1,4 +1,4 @@
-package ru.javawebinar.basejava.model;
+package ru.javawebinar.basejava.model.contact;
 
 public enum ContactType {
     CELL("Тел."),

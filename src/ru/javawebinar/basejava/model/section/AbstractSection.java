@@ -1,4 +1,4 @@
-package ru.javawebinar.basejava.model;
+package ru.javawebinar.basejava.model.section;
 
 import java.util.ArrayList;
 import java.util.List;

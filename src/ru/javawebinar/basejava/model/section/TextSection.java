@@ -1,4 +1,4 @@
-package ru.javawebinar.basejava.model;
+package ru.javawebinar.basejava.model.section;
 
 public class TextSection extends AbstractSection<String> {
 

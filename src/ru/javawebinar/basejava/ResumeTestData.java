@@ -1,6 +1,9 @@
 package ru.javawebinar.basejava;
 
 import ru.javawebinar.basejava.model.*;
+import ru.javawebinar.basejava.model.contact.Contact;
+import ru.javawebinar.basejava.model.contact.ContactType;
+import ru.javawebinar.basejava.model.section.*;
 
 import java.time.LocalDate;
 import java.util.ArrayList;

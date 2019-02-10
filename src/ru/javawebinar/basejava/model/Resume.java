@@ -1,5 +1,10 @@
 package ru.javawebinar.basejava.model;
 
+import ru.javawebinar.basejava.model.contact.Contact;
+import ru.javawebinar.basejava.model.contact.ContactType;
+import ru.javawebinar.basejava.model.section.Section;
+import ru.javawebinar.basejava.model.section.SectionType;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
