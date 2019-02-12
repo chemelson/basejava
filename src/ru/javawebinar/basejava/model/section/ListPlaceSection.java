@@ -1,26 +1,27 @@
 package ru.javawebinar.basejava.model.section;
 
+import java.util.List;
 import java.util.Objects;
 
-public class TextSection implements Section<String> {
+public class ListPlaceSection implements Section<List<Place>> {
 
-  private String content;
+  private List<Place> content;
 
-  public TextSection() {
+  public ListPlaceSection() {
   }
 
-  public TextSection(String content) {
+  public ListPlaceSection(List<Place> content) {
     Objects.requireNonNull(content, "content must not be null");
     this.content = content;
   }
 
   @Override
-  public String getContent() {
+  public List<Place> getContent() {
     return content;
   }
 
   @Override
-  public void setContent(String content) {
+  public void setContent(List<Place> content) {
     Objects.requireNonNull(content, "content must not be null");
     this.content = content;
   }
@@ -29,12 +30,19 @@ public class TextSection implements Section<String> {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    TextSection that = (TextSection) o;
+    ListPlaceSection that = (ListPlaceSection) o;
     return content.equals(that.content);
   }
 
   @Override
   public int hashCode() {
     return Objects.hash(content);
+  }
+
+  @Override
+  public String toString() {
+    return "ListPlaceSection{" +
+            "content=" + content +
+            '}';
   }
 }

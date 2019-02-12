@@ -6,16 +6,13 @@ import ru.javawebinar.basejava.model.contact.ContactType;
 import ru.javawebinar.basejava.model.section.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class ResumeTestData {
     public static void main(String[] args) {
         Resume resume = new Resume("John Doe");
 
-        Map<ContactType, Contact> contacts = new HashMap<>();
+        Map<ContactType, Contact> contacts = new EnumMap<>(ContactType.class);
         contacts.put(ContactType.CELL, new Contact("666-66-66"));
         contacts.put(ContactType.SKYPE, new Contact("Proger42"));
         contacts.put(ContactType.EMAIL, new Contact("ross03@mail.ru"));
@@ -33,21 +30,17 @@ public class ResumeTestData {
         System.out.println("\n----------");
 
 
-        Map<SectionType, Section> sections = new HashMap<>();
+        Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
-        Section<String> personal = new TextSection();
-        List<String> personalContent = new ArrayList<>();
-        personalContent.add("Аналитический склад ума, сильная логика, креативность, инициативность. Пурист кода и архитектуры.");
-        personal.setContent(personalContent);
+        Section<String> personal = new TextSection("Аналитический склад ума, сильная логика, креативность, " +
+                "инициативность. Пурист кода и архитектуры.");
         sections.put(SectionType.PERSONAL, personal);
 
-        Section<String> objective = new TextSection();
-        List<String> objectiveContent = new ArrayList<>();
-        objectiveContent.add("Ведущий стажировок и корпоративного обучения по Java Web и Enterprise технологиям");
-        objective.setContent(objectiveContent);
+        Section<String> objective = new TextSection("Ведущий стажировок и корпоративного обучения по Java Web" +
+                " и Enterprise технологиям");
         sections.put(SectionType.OBJECTIVE, objective);
 
-        Section<String> achievements = new TextSection();
+        Section<List<String>> achievements = new ListTextSection();
         List<String> achievementsContent = new ArrayList<>();
         achievementsContent.add("С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\"," +
                 " \"Многомодульный maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). " +
@@ -70,7 +63,7 @@ public class ResumeTestData {
         achievements.setContent(achievementsContent);
         sections.put(SectionType.ACHIEVEMENT, achievements);
 
-        Section<String> qualifications = new TextSection();
+        Section<List<String>> qualifications = new ListTextSection();
         List<String> qualificationsContent = new ArrayList<>();
         qualificationsContent.add("JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2");
         qualificationsContent.add("Version control: Subversion, Git, Mercury, ClearCase, Perforce");
@@ -97,7 +90,7 @@ public class ResumeTestData {
         qualifications.setContent(qualificationsContent);
         sections.put(SectionType.QUALIFICATIONS, qualifications);
 
-        Section<Place> experience = new PlaceSection();
+        Section<List<Place>> experience = new ListPlaceSection();
         List<Place> experienceContent = new ArrayList<>();
         experienceContent.add(new Place("Java Online Projects",
                 LocalDate.of(2013, 10, 1),
@@ -175,7 +168,7 @@ public class ResumeTestData {
         experience.setContent(experienceContent);
         sections.put(SectionType.EXPERIENCE, experience);
 
-        Section<Place> education = new PlaceSection();
+        Section<List<Place>> education = new ListPlaceSection();
         List<Place> educationContent = new ArrayList<>();
         educationContent.add(new Place("Coursera",
                 LocalDate.of(2013, 3, 1),
@@ -236,9 +229,7 @@ public class ResumeTestData {
         System.out.println("Sections =====>>>>>");
         for (Map.Entry<SectionType, Section> section : resume.getSections().entrySet()) {
             System.out.println(section.getKey().getTitle().toUpperCase() + ":");
-            for (Object item : section.getValue().getContent()) {
-                System.out.println("\t\t" + item);
-            }
+            System.out.println(section.getValue().getContent());
         }
     }
 }

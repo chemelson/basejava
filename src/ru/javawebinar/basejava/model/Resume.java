@@ -5,10 +5,7 @@ import ru.javawebinar.basejava.model.contact.ContactType;
 import ru.javawebinar.basejava.model.section.Section;
 import ru.javawebinar.basejava.model.section.SectionType;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Initial resume class
@@ -37,7 +34,7 @@ public class Resume implements Comparable<Resume> {
     }
 
     public Map<ContactType, Contact> getContacts() {
-        return new HashMap<>(contacts);
+        return new EnumMap<>(contacts);
     }
 
     public void setContacts(Map<ContactType, Contact> contacts) {
@@ -45,7 +42,7 @@ public class Resume implements Comparable<Resume> {
     }
 
     public Map<SectionType, Section> getSections() {
-        return new HashMap<>(sections);
+        return new EnumMap<>(sections);
     }
 
     public void setSections(Map<SectionType, Section> sections) {
@@ -57,15 +54,15 @@ public class Resume implements Comparable<Resume> {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Resume resume = (Resume) o;
-        if (!uuid.equals(resume.uuid)) return false;
-        return fullName.equals(resume.fullName);
+        return uuid.equals(resume.uuid) &&
+                fullName.equals(resume.fullName) &&
+                contacts.equals(resume.contacts) &&
+                sections.equals(resume.sections);
     }
 
     @Override
     public int hashCode() {
-        int result = uuid.hashCode();
-        result = 31 * result + fullName.hashCode();
-        return result;
+        return Objects.hash(uuid, fullName, contacts, sections);
     }
 
     @Override
@@ -79,6 +76,4 @@ public class Resume implements Comparable<Resume> {
         int cmp = fullName.compareTo(o.fullName);
         return cmp != 0 ? cmp : uuid.compareTo(o.uuid);
     }
-
-
 }
