@@ -1,12 +1,15 @@
 package ru.javawebinar.basejava;
 
-import ru.javawebinar.basejava.model.*;
+import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.model.contact.Contact;
 import ru.javawebinar.basejava.model.contact.ContactType;
 import ru.javawebinar.basejava.model.section.*;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
 
 public class ResumeTestData {
     public static void main(String[] args) {
@@ -32,15 +35,14 @@ public class ResumeTestData {
 
         Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
 
-        Section<String> personal = new TextSection("Аналитический склад ума, сильная логика, креативность, " +
+        Section personal = new TextSection("Аналитический склад ума, сильная логика, креативность, " +
                 "инициативность. Пурист кода и архитектуры.");
         sections.put(SectionType.PERSONAL, personal);
 
-        Section<String> objective = new TextSection("Ведущий стажировок и корпоративного обучения по Java Web" +
+        Section objective = new TextSection("Ведущий стажировок и корпоративного обучения по Java Web" +
                 " и Enterprise технологиям");
         sections.put(SectionType.OBJECTIVE, objective);
 
-        Section<List<String>> achievements = new ListTextSection();
         List<String> achievementsContent = new ArrayList<>();
         achievementsContent.add("С 2013 года: разработка проектов \"Разработка Web приложения\",\"Java Enterprise\"," +
                 " \"Многомодульный maven. Многопоточность. XML (JAXB/StAX). Веб сервисы (JAX-RS/SOAP). " +
@@ -60,10 +62,9 @@ public class ResumeTestData {
                 "Реализация онлайн клиента для администрирования и мониторинга системы по JMX (Jython/ Django).");
         achievementsContent.add("Реализация протоколов по приему платежей всех основных платежных системы России " +
                 "(Cyberplat, Eport, Chronopay, Сбербанк), Белоруcсии(Erip, Osmp) и Никарагуа.");
-        achievements.setContent(achievementsContent);
+        Section achievements = new ListTextSection(achievementsContent);
         sections.put(SectionType.ACHIEVEMENT, achievements);
 
-        Section<List<String>> qualifications = new ListTextSection();
         List<String> qualificationsContent = new ArrayList<>();
         qualificationsContent.add("JEE AS: GlassFish (v2.1, v3), OC4J, JBoss, Tomcat, Jetty, WebLogic, WSO2");
         qualificationsContent.add("Version control: Subversion, Git, Mercury, ClearCase, Perforce");
@@ -87,10 +88,9 @@ public class ResumeTestData {
         qualificationsContent.add("Отличное знание и опыт применения концепций ООП, SOA," +
                 " шаблонов проектрирования, архитектурных шаблонов, UML, функционального программирования");
         qualificationsContent.add("Родной русский, английский \"upper intermediate\"");
-        qualifications.setContent(qualificationsContent);
+        Section qualifications = new ListTextSection(qualificationsContent);
         sections.put(SectionType.QUALIFICATIONS, qualifications);
 
-        Section<List<Place>> experience = new ListPlaceSection();
         List<Place> experienceContent = new ArrayList<>();
         experienceContent.add(new Place("Java Online Projects",
                 LocalDate.of(2013, 10, 1),
@@ -165,10 +165,9 @@ public class ResumeTestData {
                 "http://www.alcatel.ru/",
                 "Тестирование, отладка, внедрение ПО цифровой телефонной станции Alcatel 1000 S12 (CHILL, ASM)")
         );
-        experience.setContent(experienceContent);
+        Section experience = new ListPlaceSection(experienceContent);
         sections.put(SectionType.EXPERIENCE, experience);
 
-        Section<List<Place>> education = new ListPlaceSection();
         List<Place> educationContent = new ArrayList<>();
         educationContent.add(new Place("Coursera",
                 LocalDate.of(2013, 3, 1),
@@ -221,7 +220,7 @@ public class ResumeTestData {
                 "http://www.school.mipt.ru/",
                 null)
         );
-        education.setContent(educationContent);
+        Section education = new ListPlaceSection(educationContent);
         sections.put(SectionType.EDUCATION, education);
 
         resume.setSections(sections);
@@ -229,7 +228,7 @@ public class ResumeTestData {
         System.out.println("Sections =====>>>>>");
         for (Map.Entry<SectionType, Section> section : resume.getSections().entrySet()) {
             System.out.println(section.getKey().getTitle().toUpperCase() + ":");
-            System.out.println(section.getValue().getContent());
+            System.out.println(section.getValue());
         }
     }
 }

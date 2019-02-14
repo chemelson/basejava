@@ -1,9 +1,6 @@
 package ru.javawebinar.basejava.model.section;
 
 
-public interface Section<CNT> {
+public interface Section {
 
-    CNT getContent();
-
-    void setContent(CNT content);
 }
