@@ -1,4 +1,4 @@
-package ru.javawebinar.basejava.model.section;
+package ru.javawebinar.basejava.model;
 
 public enum SectionType {
     PERSONAL("Личные качества"),

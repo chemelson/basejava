@@ -1,6 +1,6 @@
 package ru.javawebinar.basejava;
 
-import ru.javawebinar.basejava.model.section.SectionType;
+import ru.javawebinar.basejava.model.SectionType;
 
 public class TestSingleton {
     private static TestSingleton instance;
