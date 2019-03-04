@@ -13,7 +13,7 @@ public class RecursiveDirectory {
         }
     }
 
-    public static void printDirectory(File root, int tabLevel) throws IOException {
+    private static void printDirectory(File root, int tabLevel) throws IOException {
         StringBuilder tabs = new StringBuilder();
         for (int i = 0; i < tabLevel; i++) {
             tabs.append("\t");
