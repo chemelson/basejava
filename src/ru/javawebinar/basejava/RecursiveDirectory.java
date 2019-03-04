@@ -9,7 +9,7 @@ public class RecursiveDirectory {
     }
 
     private static void printDirectory(File root) {
-       if (!root.isDirectory()) {
+       if (root.isFile()) {
             System.out.println(root.getName());
         } else {
             for (File item : root.listFiles()) {
