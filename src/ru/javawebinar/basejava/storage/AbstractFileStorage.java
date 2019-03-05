@@ -1,7 +1,7 @@
-package ru.javawebinar.basejava.model;
+package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.StorageException;
-import ru.javawebinar.basejava.storage.AbstractStorage;
+import ru.javawebinar.basejava.model.Resume;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,13 +49,15 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     }
 
     @Override
-    protected Resume doGet(File searchKey) {
+    protected Resume doGet(File file) {
         return null;
     }
 
     @Override
-    protected void doDelete(File searchKey) {
-
+    protected void doDelete(File file) {
+        if (!file.delete()) {
+            throw new StorageException("Error deleting file: ", file.getName());
+        }
     }
 
     @Override
@@ -65,12 +67,21 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public void clear() {
-
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                doDelete(file);
+            }
+        }
     }
 
     @Override
     public int size() {
-        return 0;
+        String[] fileNames = directory.list();
+        if (fileNames == null) {
+            throw new StorageException("Error reading root directory: ", directory.getName());
+        }
+        return fileNames.length;
     }
 
     protected abstract void doWrite(Resume resume, File file);
