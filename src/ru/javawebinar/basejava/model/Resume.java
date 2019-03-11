@@ -16,7 +16,7 @@ public class Resume implements Comparable<Resume> {
     private final String fullName;
 
     private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
-    private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
+    private final Map<SectionType, AbstractSection> sections = new EnumMap<>(SectionType.class);
 
     public Resume(String fullName) {
         this(UUID.randomUUID().toString(), fullName);
@@ -41,31 +41,28 @@ public class Resume implements Comparable<Resume> {
         contacts.put(type, content);
     }
 
-    public Section getSection(SectionType type) {
+    public AbstractSection getSection(SectionType type) {
         return sections.get(type);
     }
 
-    public void setSection(SectionType type, Section section) {
-        sections.put(type, section);
+    public void setSection(SectionType type, AbstractSection abstractSection) {
+        sections.put(type, abstractSection);
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         Resume resume = (Resume) o;
-
-        if (!uuid.equals(resume.uuid)) return false;
-        return fullName.equals(resume.fullName);
-
+        return uuid.equals(resume.uuid) &&
+                fullName.equals(resume.fullName) &&
+                Objects.equals(contacts, resume.contacts) &&
+                Objects.equals(sections, resume.sections);
     }
 
     @Override
     public int hashCode() {
-        int result = uuid.hashCode();
-        result = 31 * result + fullName.hashCode();
-        return result;
+        return Objects.hash(uuid, fullName, contacts, sections);
     }
 
     @Override
