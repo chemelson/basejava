@@ -250,5 +250,78 @@ public class ResumeTestData {
                 positions_9
         );
         courses.add(organization_9);
+
+        Organization.Position position_10 = new Organization.Position(
+                of(2011, 3),
+                of(2011, 4),
+                "Курс \"Объектно-ориентированный анализ ИС. Концептуальное моделирование на UML.\"",
+                null
+        );
+
+        // Add to luxoft
+        positions_4.add(position_10);
+        courses.add(organization_4);
+
+        Organization.Position position_11 = new Organization.Position (
+                of(2005, 1),
+                of(2005, 4),
+                "3 месяца обучения мобильным IN сетям (Берлин)",
+                null
+        );
+
+        // Add to Siemens AG
+        positions_7.add(position_11);
+        courses.add(organization_7);
+
+        Organization.Position position_12 = new Organization.Position(
+                of(1997, 9),
+                of(1998, 3),
+                "6 месяцев обучения цифровым телефонным сетям (Москва)",
+                null
+        );
+
+        // Add to Alcatel
+        positions_8.add(position_12);
+        courses.add(organization_8);
+
+        Organization.Position position_13 = new Organization.Position(
+                of(1993, 9),
+                of(1996, 7),
+                "Аспирантура (программист С, С++)",
+                null
+        );
+
+        Organization.Position position_14 = new Organization.Position(
+                of(1987, 9),
+                of(1993, 7),
+                "Инженер (программист Fortran, C)",
+                null
+        );
+
+        List<Organization.Position> positions_13_14 = new ArrayList<>();
+        positions_13_14.add(position_13);
+        positions_13_14.add(position_14);
+        Organization organization_10 = new Organization(
+                "Санкт-Петербургский национальный исследовательский " +
+                        "университет информационных технологий, механики и оптики",
+                "http://www.ifmo.ru/ru/",
+                positions_13_14
+        );
+        courses.add(organization_10);
+
+        Organization.Position position_15 = new Organization.Position(
+                of(1984, 9),
+                of(1987, 6),
+                "Закончил с отличием",
+                null
+        );
+        List<Organization.Position> positions_15 = new ArrayList<>();
+        positions_15.add(position_15);
+        Organization organization_11 = new Organization(
+                "Заочная физико-техническая школа при МФТИ",
+                "http://www.school.mipt.ru/",
+                positions_15
+        );
+        courses.add(organization_11);
     }
 }

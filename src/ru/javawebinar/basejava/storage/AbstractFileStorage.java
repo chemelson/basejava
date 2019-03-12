@@ -5,6 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,7 +51,17 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected Resume doGet(File file) {
-        return null;
+        Resume resume = null;
+
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File item : files) {
+                if (file.compareTo(item) == 0) {
+                    // get Resume from file and store it in "resume" variable
+                }
+            }
+        }
+        return resume;
     }
 
     @Override
@@ -62,7 +73,16 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected List<Resume> doCopyAll() {
-        return null;
+        List<Resume> resumes = new ArrayList<>();
+
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                resumes.add(doGet(file));
+            }
+        }
+
+        return resumes;
     }
 
     @Override
