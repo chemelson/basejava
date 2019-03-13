@@ -31,7 +31,12 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     protected void doUpdate(Resume resume, File file) {
-
+        try {
+            file.createNewFile();
+            doWrite(resume, file);
+        } catch (IOException e) {
+            throw new StorageException("IO Error", file.getName(), e);
+        }
     }
 
     @Override
@@ -62,6 +67,21 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
             }
         }
         return resume;
+    }
+
+    protected File doGet(String fileName) {
+        File foundFile = null;
+
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (fileName.equals(file.getName())) {
+                    foundFile = file;
+                }
+            }
+        }
+
+        return foundFile;
     }
 
     @Override
