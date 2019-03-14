@@ -10,99 +10,17 @@ import java.util.List;
 import java.util.Objects;
 
 public abstract class AbstractFileStorage extends AbstractStorage<File> {
-
     private File directory;
 
-    public AbstractFileStorage(File directory) {
+    protected AbstractFileStorage(File directory) {
         Objects.requireNonNull(directory, "directory must not be null");
         if (!directory.isDirectory()) {
-            throw new IllegalArgumentException(directory.getAbsolutePath() + " is not a directory");
+            throw new IllegalArgumentException(directory.getAbsolutePath() + " is not directory");
         }
         if (!directory.canRead() || !directory.canWrite()) {
             throw new IllegalArgumentException(directory.getAbsolutePath() + " is not readable/writable");
         }
         this.directory = directory;
-    }
-
-    @Override
-    protected File getSearchKey(String uuid) {
-        return new File(directory, uuid);
-    }
-
-    @Override
-    protected void doUpdate(Resume resume, File file) {
-        try {
-            file.createNewFile();
-            doWrite(resume, file);
-        } catch (IOException e) {
-            throw new StorageException("IO Error", file.getName(), e);
-        }
-    }
-
-    @Override
-    protected boolean isExist(File file) {
-        return file.exists();
-    }
-
-    @Override
-    protected void doSave(Resume resume, File file) {
-        try {
-            file.createNewFile();
-            doWrite(resume, file);
-        } catch (IOException e) {
-            throw new StorageException("IO Error", file.getName(), e);
-        }
-    }
-
-    @Override
-    protected Resume doGet(File file) {
-        Resume resume = null;
-
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File item : files) {
-                if (file.compareTo(item) == 0) {
-                    // get Resume from file and store it in "resume" variable
-                }
-            }
-        }
-        return resume;
-    }
-
-    protected File doGet(String fileName) {
-        File foundFile = null;
-
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (fileName.equals(file.getName())) {
-                    foundFile = file;
-                }
-            }
-        }
-
-        return foundFile;
-    }
-
-    @Override
-    protected void doDelete(File file) {
-        if (!file.delete()) {
-            throw new StorageException("Error deleting file: ", file.getName());
-        }
-    }
-
-    @Override
-    protected List<Resume> doCopyAll() {
-        List<Resume> resumes = new ArrayList<>();
-
-        File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                resumes.add(doGet(file));
-            }
-        }
-
-        return resumes;
     }
 
     @Override
@@ -117,12 +35,72 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
 
     @Override
     public int size() {
-        String[] fileNames = directory.list();
-        if (fileNames == null) {
-            throw new StorageException("Error reading root directory: ", directory.getName());
+        String[] list = directory.list();
+        if (list == null) {
+            throw new StorageException("Directory read error", null);
         }
-        return fileNames.length;
+        return list.length;
     }
 
-    protected abstract void doWrite(Resume resume, File file);
+    @Override
+    protected File getSearchKey(String uuid) {
+        return new File(directory, uuid);
+    }
+
+    @Override
+    protected void doUpdate(Resume r, File file) {
+        try {
+            doWrite(r, file);
+        } catch (IOException e) {
+            throw new StorageException("File write error", r.getUuid(), e);
+        }
+    }
+
+    @Override
+    protected boolean isExist(File file) {
+        return file.exists();
+    }
+
+    @Override
+    protected void doSave(Resume r, File file) {
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            throw new StorageException("Couldn't create file " + file.getAbsolutePath(), file.getName(), e);
+        }
+        doUpdate(r, file);
+    }
+
+    protected abstract void doWrite(Resume r, File file) throws IOException;
+
+    protected abstract Resume doRead(File file) throws IOException;
+
+    @Override
+    protected Resume doGet(File file) {
+        try {
+            return doRead(file);
+        } catch (IOException e) {
+            throw new StorageException("File read error", file.getName(), e);
+        }
+    }
+
+    @Override
+    protected void doDelete(File file) {
+        if (!file.delete()) {
+            throw new StorageException("File delete error", file.getName());
+        }
+    }
+
+    @Override
+    protected List<Resume> doCopyAll() {
+        File[] files = directory.listFiles();
+        if (files == null) {
+            throw new StorageException("Directory read error", null);
+        }
+        List<Resume> list = new ArrayList<>(files.length);
+        for (File file : files) {
+            list.add(doGet(file));
+        }
+        return list;
+    }
 }
