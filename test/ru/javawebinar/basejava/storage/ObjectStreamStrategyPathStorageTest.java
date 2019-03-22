@@ -1,8 +1,8 @@
 package ru.javawebinar.basejava.storage;
 
-public class FileStorageTest extends AbstractStorageTest {
+public class ObjectStreamStrategyPathStorageTest extends AbstractStorageTest {
 
-    public FileStorageTest() {
+    public ObjectStreamStrategyPathStorageTest() {
         super(new FileStorage(STORAGE_FILE_DIR, new ObjectStreamSerializationStrategy()));
     }
 }
