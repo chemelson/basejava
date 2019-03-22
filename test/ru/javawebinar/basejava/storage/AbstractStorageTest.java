@@ -7,6 +7,8 @@ import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.*;
 
 import java.io.File;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.Month;
 import java.util.Arrays;
 import java.util.List;
@@ -15,7 +17,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractStorageTest {
-    protected static final File STORAGE_DIR = new File("/home/chemelson/IdeaProjects/basejava/storage");
+    protected static final File STORAGE_FILE_DIR = new File("/home/chemelson/IdeaProjects/basejava/storage");
+    protected static final Path STORAGE_PATH_DIR = Paths.get("/home/chemelson/IdeaProjects/basejava/storage");
 
     protected Storage storage;
 
