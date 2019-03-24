@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
-import static ru.javawebinar.basejava.storage.ResumeTestData.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -20,6 +19,16 @@ import static org.junit.Assert.assertTrue;
 public abstract class AbstractStorageTest {
     protected static final File STORAGE_FILE_DIR = new File("/home/chemelson/IdeaProjects/basejava/storage");
     protected static final Path STORAGE_PATH_DIR = Paths.get("/home/chemelson/IdeaProjects/basejava/storage");
+
+    private static final String UUID_1 = "uuid_1";
+    private static final String UUID_2 = "uuid_2";
+    private static final String UUID_3 = "uuid_3";
+    private static final String UUID_4 = "uuid_4";
+
+    private static final Resume R1 = ResumeTestData.getInstance(UUID_1, "Name_1");
+    private static final Resume R2 = ResumeTestData.getInstance(UUID_2, "Name_2");
+    private static final Resume R3 = ResumeTestData.getInstance(UUID_3, "Name_3");
+    private static final Resume R4 = ResumeTestData.getInstance(UUID_4, "Name_4");
 
     protected Storage storage;
 

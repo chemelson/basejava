@@ -29,10 +29,11 @@ public class FileStorage extends AbstractStorage<File> {
     @Override
     public void clear() {
         File[] files = directory.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                doDelete(file);
-            }
+        if (files == null) {
+            throw new StorageException("Directory read error", null);
+        }
+        for (File file : files) {
+            doDelete(file);
         }
     }
 
@@ -53,7 +54,7 @@ public class FileStorage extends AbstractStorage<File> {
     @Override
     protected void doUpdate(Resume resume, File file) {
         try {
-            doWrite(resume, new BufferedOutputStream(new FileOutputStream(file)));
+            serializationStrategy.serialize(resume, new BufferedOutputStream(new FileOutputStream(file)));
         } catch (IOException e) {
             throw new StorageException("File write error", resume.getUuid(), e);
         }
@@ -77,7 +78,7 @@ public class FileStorage extends AbstractStorage<File> {
     @Override
     protected Resume doGet(File file) {
         try {
-            return doRead(new BufferedInputStream(new FileInputStream(file)));
+            return serializationStrategy.deserialize(new BufferedInputStream(new FileInputStream(file)));
         } catch (IOException e) {
             throw new StorageException("File read error", file.getName(), e);
         }
@@ -101,13 +102,5 @@ public class FileStorage extends AbstractStorage<File> {
             list.add(doGet(file));
         }
         return list;
-    }
-
-    private void doWrite(Resume resume, OutputStream os) throws IOException {
-        serializationStrategy.serialize(resume, os);
-    }
-
-    private Resume doRead(InputStream is) throws IOException {
-        return serializationStrategy.deserialize(is);
     }
 }

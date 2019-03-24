@@ -13,5 +13,6 @@ import org.junit.runners.Suite;
         ObjectStreamStrategyFileStorageTest.class,
         ObjectStreamStrategyPathStorageTest.class
 })
+
 public class AllStorageTest {
 }
