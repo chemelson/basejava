@@ -8,7 +8,10 @@ public class ListSection extends AbstractSection {
 
     private static final long serialVersionUID = 1L;
 
-    private final List<String> items;
+    private List<String> items;
+
+    public ListSection() {
+    }
 
     public ListSection(String... items) {
         this(Arrays.asList(items));
@@ -32,15 +35,12 @@ public class ListSection extends AbstractSection {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
         ListSection that = (ListSection) o;
-
         return items.equals(that.items);
-
     }
 
     @Override
     public int hashCode() {
-        return items.hashCode();
+        return Objects.hash(items);
     }
 }
