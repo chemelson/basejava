@@ -6,7 +6,7 @@ import java.util.List;
 public class MainConcurrency {
 
     public static final int THREADS_NUMBER = 10000;
-    private static int counter;
+    private static volatile int counter;
     private static final Object LOCK = new Object();
 
 
@@ -47,7 +47,7 @@ public class MainConcurrency {
         System.out.println(counter);
     }
 
-    private synchronized void inc() {
+    private void inc() {
         counter++;
     }
 }
