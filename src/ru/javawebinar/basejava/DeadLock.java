@@ -11,23 +11,21 @@ public class DeadLock {
 
     }
 
-    private static void longOperation() {
-        long counter = 0;
-        for (int i = 0; i < 1000000; i++) {
-            counter += i;
-        }
-    }
-
     private static void runDeadlock(Object resource_1, Object resource_2, String threadName) {
         new Thread(() -> {
-            synchronized (resource_1) {
-                System.out.println("Thread " + threadName + " first lock:" + resource_1);
-                longOperation();
-                synchronized (resource_2) {
-                    System.out.println("Thread " + threadName + " second lock:" + resource_2);
-                    longOperation();
+            try {
+                synchronized (resource_1) {
+                    System.out.println("Thread " + threadName + " first lock:" + resource_1);
+                    Thread.sleep(5000);
+                    synchronized (resource_2) {
+                        System.out.println("Thread " + threadName + " second lock:" + resource_2);
+                        Thread.sleep(5000);
+                    }
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
+
         }).start();
     }
 }
