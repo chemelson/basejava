@@ -13,6 +13,9 @@ public class MainStreams {
         assert minValue(new int[] {1, 2, 3, 3, 2, 3}) == 123 : "Not equal";
         assert minValue(new int[] {9, 8}) == 89 : "Not equal";
 
+        assert minValueSimple(new int[] {1, 2, 3, 3, 2, 3}) == 123 : "Not equal";
+        assert minValueSimple(new int[] {9, 8}) == 89 : "Not equal";
+
         assert oddOrEven(new ArrayList<>(Arrays.asList(2, 2, 3, 5))).equals(Arrays.asList(3, 5)) : "Not equal";
         assert oddOrEven(new ArrayList<>(Arrays.asList(2, 2, 3, 5, 1))).equals(Arrays.asList(2, 2)) : "Not equal";
     }
@@ -26,12 +29,20 @@ public class MainStreams {
                 .reduce(0, (a, b) -> a + b * ((int) Math.pow(10, counter.getAndIncrement())));
     }
 
+    private static int minValueSimple(int[] values) {
+        return Arrays.stream(values).sorted().distinct().reduce(0, (a, b) -> {
+            a *= 10;
+            a += b;
+            return a;
+        });
+
+    }
+
     private static List<Integer> oddOrEven(List<Integer> integers) {
         int sum = (int) integers.stream().mapToInt(Integer::intValue).count();
-        if (sum % 2 == 0) {
-            return integers.stream().filter(item -> item % 2 != 0).collect(Collectors.toList());
-        } else {
-            return integers.stream().filter(item -> item % 2 == 0).collect(Collectors.toList());
-        }
+        return integers
+                .stream()
+                .filter(item -> (sum % 2 == 0 && item % 2 != 0) || (sum % 2 != 0 && item % 2 == 0))
+                .collect(Collectors.toList());
     }
 }
