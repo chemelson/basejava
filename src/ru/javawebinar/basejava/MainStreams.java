@@ -30,11 +30,10 @@ public class MainStreams {
     }
 
     private static int minValueSimple(int[] values) {
-        return Arrays.stream(values).sorted().distinct().reduce(0, (a, b) -> {
-            a *= 10;
-            a += b;
-            return a;
-        });
+        return Arrays.stream(values)
+                .sorted()
+                .distinct()
+                .reduce(0, (a, b) -> a * 10 + b);
 
     }
 
@@ -42,7 +41,7 @@ public class MainStreams {
         int sum = (int) integers.stream().mapToInt(Integer::intValue).count();
         return integers
                 .stream()
-                .filter(item -> (sum % 2 == 0 && item % 2 != 0) || (sum % 2 != 0 && item % 2 == 0))
+                .filter(item -> (sum % 2 != item % 2))
                 .collect(Collectors.toList());
     }
 }
