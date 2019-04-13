@@ -2,13 +2,12 @@ package ru.javawebinar.basejava.storage;
 
 import org.junit.Before;
 import org.junit.Test;
+import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.*;
 
 import java.io.File;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import static org.junit.Assert.assertTrue;
 
 
 public abstract class AbstractStorageTest {
-    protected static final String STORAGE_DIR = "/home/chemelson/IdeaProjects/basejava/storage";
+    protected static final File STORAGE_DIR = Config.get().getStorageDir();
 
     private static final String UUID_1 = "uuid_1";
     private static final String UUID_2 = "uuid_2";

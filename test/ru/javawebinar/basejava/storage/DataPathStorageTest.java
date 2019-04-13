@@ -8,6 +8,6 @@ import java.nio.file.Paths;
 public class DataPathStorageTest extends AbstractStorageTest {
 
     public DataPathStorageTest() {
-        super(new PathStorage(Paths.get(STORAGE_DIR), new DataStreamSerializer()));
+        super(new PathStorage(STORAGE_DIR.toPath(), new DataStreamSerializer()));
     }
 }
