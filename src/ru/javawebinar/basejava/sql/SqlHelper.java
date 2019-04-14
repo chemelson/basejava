@@ -6,8 +6,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class SqlHelper {
 
@@ -17,12 +15,12 @@ public class SqlHelper {
         connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
 
-    private interface Modifier<T> {
-        void modify(T statement);
+    public interface Modifier<T> {
+        void modify(T statement) throws SQLException;
     }
 
-    private interface Retriever<T, R> {
-        R retrieve(T statement);
+    public interface Retriever<T, R> {
+        R retrieve(T statement) throws SQLException;
     }
 
     public void modify(String query, Modifier<PreparedStatement> modifier) {
