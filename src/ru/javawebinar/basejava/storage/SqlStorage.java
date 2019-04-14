@@ -69,6 +69,7 @@ public class SqlStorage implements Storage {
                 throw new NotExistStorageException(uuid);
             }
             return new Resume(uuid, rs.getString("full_name"));
+
         } catch (SQLException e) {
             throw new StorageException(e);
         }
