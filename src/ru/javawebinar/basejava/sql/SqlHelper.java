@@ -16,13 +16,13 @@ public class SqlHelper {
     }
 
     public interface Requester<T, R> {
-        R request(T statement) throws SQLException;
+        R execute(T statement) throws SQLException;
     }
 
     public <R> R request(String query, Requester<PreparedStatement, R> retriever) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
-            return retriever.request(ps);
+            return retriever.execute(ps);
         } catch (SQLException e) {
             throw new StorageException(e);
         }
