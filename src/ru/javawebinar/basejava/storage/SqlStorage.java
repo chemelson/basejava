@@ -2,6 +2,7 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
@@ -9,6 +10,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class SqlStorage implements Storage {
 
@@ -48,17 +50,33 @@ public class SqlStorage implements Storage {
                     }
                     return null;
                 });
+        for (Map.Entry<ContactType, String> e : resume.getContacts().entrySet()) {
+            helper.request("INSERT INTO contact (resume_uuid, type, value) VALUES (?, ?, ?)", ps -> {
+                ps.setString(1, resume.getUuid());
+                ps.setString(2, e.getKey().name());
+                ps.setString(3, e.getValue());
+                return null;
+            });
+        }
+
     }
 
     @Override
     public Resume get(String uuid) {
-        return helper.request("SELECT * FROM resume r WHERE r.uuid = ?", ps -> {
+        return helper.request("SELECT * FROM resume r" +
+                " JOIN contact c ON r.uuid = c.resume_uuid WHERE r.uuid = ?", ps -> {
             ps.setString(1, uuid);
             ResultSet rs = ps.executeQuery();
             if (!rs.next()) {
                 throw new NotExistStorageException(uuid);
             }
-            return new Resume(uuid, rs.getString("full_name"));
+            Resume resume = new Resume(uuid, rs.getString("full_name"));
+            do {
+                String value = rs.getString("value");
+                ContactType type = ContactType.valueOf(rs.getString("type"));
+                resume.addContact(type, value);
+            } while (rs.next());
+            return resume;
         });
     }
 
