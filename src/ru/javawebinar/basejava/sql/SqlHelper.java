@@ -15,27 +15,14 @@ public class SqlHelper {
         connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
 
-    public interface Modifier<T> {
-        void modify(T statement) throws SQLException;
+    public interface Requester<T, R> {
+        R request(T statement) throws SQLException;
     }
 
-    public interface Retriever<T, R> {
-        R retrieve(T statement) throws SQLException;
-    }
-
-    public void modify(String query, Modifier<PreparedStatement> modifier) {
+    public <R> R request(String query, Requester<PreparedStatement, R> retriever) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
-           modifier.modify(ps);
-        } catch (SQLException e) {
-            throw new StorageException(e);
-        }
-    }
-
-    public <R> R retrieve(String query, Retriever<PreparedStatement, R> retriever) {
-        try (Connection conn = connectionFactory.getConnection();
-             PreparedStatement ps = conn.prepareStatement(query)) {
-            return retriever.retrieve(ps);
+            return retriever.request(ps);
         } catch (SQLException e) {
             throw new StorageException(e);
         }
