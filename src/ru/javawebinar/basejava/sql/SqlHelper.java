@@ -15,14 +15,14 @@ public class SqlHelper {
         connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
 
-    public interface Requester<T, R> {
+    public interface SqlExecutor<T, R> {
         R execute(T statement) throws SQLException;
     }
 
-    public <R> R request(String query, Requester<PreparedStatement, R> retriever) {
+    public <R> R request(String query, SqlExecutor<PreparedStatement, R> executor) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
-            return retriever.execute(ps);
+            return executor.execute(ps);
         } catch (SQLException e) {
             throw new StorageException(e);
         }

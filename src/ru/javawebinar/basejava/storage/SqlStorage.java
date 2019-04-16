@@ -25,7 +25,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public void update(Resume resume) {
-        helper.request("UPDATE resume SET full_name = ? WHERE uuid = ?", (SqlHelper.Requester<PreparedStatement, Void>) ps -> {
+        helper.request("UPDATE resume SET full_name = ? WHERE uuid = ?", (SqlHelper.SqlExecutor<PreparedStatement, Void>) ps -> {
             ps.setString(1, resume.getFullName());
             ps.setString(2, resume.getUuid());
             int rowsAffected = ps.executeUpdate();
@@ -39,7 +39,7 @@ public class SqlStorage implements Storage {
     @Override
     public void save(Resume resume) {
         helper.request("INSERT INTO resume (uuid, full_name) VALUES (?, ?) ON CONFLICT (uuid) DO NOTHING",
-                (SqlHelper.Requester<PreparedStatement, Void>) ps -> {
+                (SqlHelper.SqlExecutor<PreparedStatement, Void>) ps -> {
                     ps.setString(1, resume.getUuid());
                     ps.setString(2, resume.getFullName());
                     int rowsAffected = ps.executeUpdate();
@@ -64,7 +64,7 @@ public class SqlStorage implements Storage {
 
     @Override
     public void delete(String uuid) {
-        helper.request("DELETE FROM resume r WHERE r.uuid = ?", (SqlHelper.Requester<PreparedStatement, Void>) ps -> {
+        helper.request("DELETE FROM resume r WHERE r.uuid = ?", (SqlHelper.SqlExecutor<PreparedStatement, Void>) ps -> {
             ps.setString(1, uuid);
             int rowsAffected = ps.executeUpdate();
             if (rowsAffected == 0) {
