@@ -15,14 +15,30 @@ public class SqlHelper {
         connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
     }
 
-    public interface SqlExecutor<T, R> {
-        R execute(T statement) throws SQLException;
+    public void execute(String sql) {
+        execute(sql, PreparedStatement::execute);
     }
 
-    public <R> R request(String query, SqlExecutor<PreparedStatement, R> executor) {
+    public <T> T execute(String query, SqlExecutor<PreparedStatement, T> executor) {
         try (Connection conn = connectionFactory.getConnection();
              PreparedStatement ps = conn.prepareStatement(query)) {
             return executor.execute(ps);
+        } catch (SQLException e) {
+            throw new StorageException(e);
+        }
+    }
+
+    public <T> T transactionalExecute(SqlTransaction<T> executor) {
+        try (Connection conn = connectionFactory.getConnection()) {
+            try {
+                conn.setAutoCommit(false);
+                T result = executor.execute(conn);
+                conn.commit();
+                return result;
+            } catch (SQLException e) {
+                conn.rollback();
+                throw ExceptionUtil.convertException(e);
+            }
         } catch (SQLException e) {
             throw new StorageException(e);
         }
