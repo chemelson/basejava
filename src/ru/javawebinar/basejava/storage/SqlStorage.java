@@ -28,7 +28,9 @@ public class SqlStorage implements Storage {
             try (PreparedStatement ps = conn.prepareStatement("UPDATE resume SET full_name = ? WHERE uuid = ?")) {
                 ps.setString(1, resume.getFullName());
                 ps.setString(2, uuid);
-                ps.execute();
+                if (ps.executeUpdate() != 1) {
+                    throw new NotExistStorageException(resume.getUuid());
+                }
             }
 
             try (PreparedStatement ps = conn.prepareStatement("DELETE FROM contact WHERE resume_uuid = ?")) {
