@@ -29,15 +29,11 @@ public class SqlStorage implements Storage {
                 ps.setString(1, resume.getFullName());
                 ps.setString(2, uuid);
                 if (ps.executeUpdate() != 1) {
-                    throw new NotExistStorageException(resume.getUuid());
+                    throw new NotExistStorageException(uuid);
                 }
             }
 
-            try (PreparedStatement ps = conn.prepareStatement("DELETE FROM contact WHERE resume_uuid = ?")) {
-                ps.setString(1, uuid);
-                ps.execute();
-            }
-
+            deleteContacts(conn, resume);
             insertContacts(conn, resume);
             return null;
         });
@@ -123,13 +119,18 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private Resume addContact(ResultSet rs, Resume resume) throws SQLException {
+    private void deleteContacts(Connection conn, Resume resume) {
+        helper.execute("DELETE FROM contact WHERE resume_uuid=?", ps -> {
+            ps.setString(1, resume.getUuid());
+            ps.execute();
+            return null;
+        });
+    }
+
+    private void addContact(ResultSet rs, Resume resume) throws SQLException {
         String value = rs.getString("value");
-        String type = rs.getString("type");
-        if (value != null && type != null) {
-            ContactType contactType = ContactType.valueOf(type);
-            resume.addContact(contactType, value);
+        if (value != null) {
+            resume.addContact(ContactType.valueOf(rs.getString("type")), value);
         }
-        return resume;
     }
 }
