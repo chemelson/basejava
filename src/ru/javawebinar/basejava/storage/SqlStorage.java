@@ -7,6 +7,10 @@ import ru.javawebinar.basejava.sql.SqlHelper;
 
 import java.sql.*;
 import java.util.*;
+import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class SqlStorage implements Storage {
 
@@ -84,17 +88,47 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        return helper.execute("SELECT * FROM resume r" +
-                " LEFT JOIN contact c ON r.uuid = c.resume_uuid ORDER BY r.uuid ASC", ps -> {
+        List<Resume> allResumes = getResumesOnly();
+        Map<String, Map<ContactType, String>> allContacts = getContactsOnly();
+        allResumes.forEach(resume -> {
+            Map<ContactType, String> contacts = allContacts.get(resume.getUuid());
+            if (contacts != null) {
+                contacts.forEach(resume::addContact);
+            }
+        });
+        return allResumes;
+    }
+
+    private List<Resume> getResumesOnly() {
+        return helper.execute("SELECT * FROM resume r ORDER BY r.uuid ASC", ps -> {
+            List<Resume> resumes = new LinkedList<>();
             ResultSet rs = ps.executeQuery();
-            Map<String, Resume> resumeMap = new TreeMap<>();
             while (rs.next()) {
                 String uuid = rs.getString("uuid").trim();
                 String fullName = rs.getString("full_name").trim();
-                resumeMap.computeIfAbsent(uuid, resume -> new Resume(uuid, fullName));
-                addContact(rs, resumeMap.get(uuid));
+                resumes.add(new Resume(uuid, fullName));
             }
-            return new ArrayList<>(resumeMap.values());
+            return resumes;
+        });
+    }
+
+    private Map<String, Map<ContactType, String>> getContactsOnly() {
+        return helper.execute("SELECT * FROM contact", ps -> {
+            Map<String, Map<ContactType, String>> allContacts = new HashMap<>();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String uuid = rs.getString("resume_uuid");
+                String value = rs.getString("value");
+                String type = rs.getString("type");
+                Map<ContactType, String> contacts = allContacts.get(uuid);
+                if (contacts != null) {
+                    contacts.put(ContactType.valueOf(type), value);
+                } else {
+                    contacts = new HashMap<>();
+                    allContacts.put(uuid, contacts);
+                }
+            }
+            return allContacts;
         });
     }
 
