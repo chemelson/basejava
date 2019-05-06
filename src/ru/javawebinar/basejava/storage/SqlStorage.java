@@ -36,9 +36,9 @@ public class SqlStorage implements Storage {
                 }
             }
 
-            deleteContacts(conn, resume);
+            deleteAttributes(resume, "contact");
             insertContacts(conn, resume);
-            deleteSections(conn, resume);
+            deleteAttributes(resume, "section");
             insertSections(conn, resume);
             return null;
         });
@@ -185,18 +185,10 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void deleteContacts(Connection conn, Resume resume) {
-        helper.execute("DELETE FROM contact WHERE resume_uuid=?", ps -> {
-            ps.setString(1, resume.getUuid());
-            ps.execute();
-            return null;
-        });
-    }
-
     private void addContact(ResultSet rs, Resume resume) throws SQLException {
-        String value = rs.getString("contact_value");
+        String value = rs.getString("contact_value"); // BAD! Dependency with get method
         if (value != null) {
-            resume.addContact(ContactType.valueOf(rs.getString("contact_type")), value);
+            resume.addContact(ContactType.valueOf(rs.getString("contact_type")), value); // BAD! Dependency with get method
         }
     }
 
@@ -226,18 +218,10 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void deleteSections(Connection conn, Resume resume) {
-        helper.execute("DELETE FROM section WHERE resume_uuid=?", ps -> {
-            ps.setString(1, resume.getUuid());
-            ps.execute();
-            return null;
-        });
-    }
-
     private void addSection(ResultSet rs, Resume resume) throws SQLException {
-        String value = rs.getString("section_value");
+        String value = rs.getString("section_value"); // BAD! Dependency with get method
         if (value != null) {
-            String type = rs.getString("section_type");
+            String type = rs.getString("section_type"); // BAD! Dependency with get method
             SectionType sectionType = SectionType.valueOf(type);
             switch (sectionType) {
                 case PERSONAL:
@@ -252,5 +236,13 @@ public class SqlStorage implements Storage {
                     throw new IllegalStateException();
             }
         }
+    }
+
+    private void deleteAttributes(Resume resume, String attributeName) {
+        helper.execute("DELETE FROM " + attributeName + " WHERE resume_uuid=?", ps -> {
+            ps.setString(1, resume.getUuid());
+            ps.execute();
+            return null;
+        });
     }
 }
