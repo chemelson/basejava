@@ -95,10 +95,15 @@ public class SqlStorage implements Storage {
     public List<Resume> getAllSorted() {
         List<Resume> allResumes = getResumesOnly();
         Map<String, Map<ContactType, String>> allContacts = getContactsOnly();
+        Map<String, Map<SectionType, AbstractSection>> allSections = getSectionsOnly();
         allResumes.forEach(resume -> {
             Map<ContactType, String> contacts = allContacts.get(resume.getUuid());
             if (contacts != null) {
                 contacts.forEach(resume::addContact);
+            }
+            Map<SectionType, AbstractSection> sections = allSections.get(resume.getUuid());
+            if (sections != null) {
+                sections.forEach(resume::addSection);
             }
         });
         return new ArrayList<>(allResumes);
@@ -133,7 +138,30 @@ public class SqlStorage implements Storage {
     }
 
     private Map<String, Map<SectionType, AbstractSection>> getSectionsOnly() {
-        return null;
+        return helper.execute("SELECT * FROM section", ps -> {
+            Map<String, Map<SectionType, AbstractSection>> allSections = new HashMap<>();
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                String uuid = rs.getString("resume_uuid");
+                String value = rs.getString("value");
+                String type = rs.getString("type");
+                SectionType sectionType = SectionType.valueOf(type);
+                Map<SectionType, AbstractSection> sections = allSections.computeIfAbsent(uuid, k -> new HashMap<>());
+                switch (sectionType) {
+                    case PERSONAL:
+                    case OBJECTIVE:
+                        sections.put(sectionType, new TextSection(value));
+                        break;
+                    case ACHIEVEMENT:
+                    case QUALIFICATIONS:
+                        sections.put(sectionType, new ListSection(value.split("\n")));
+                        break;
+                    default:
+                        throw new IllegalStateException();
+                }
+            }
+            return allSections;
+        });
     }
 
     @Override
