@@ -9,9 +9,9 @@ public class ResumeTestData {
     public static Resume getInstance(String uuid, String fullName) {
         Resume resume = new Resume(uuid, fullName);
 
-//        resume.addContact(ContactType.MAIL, "mail1@ya.ru");
-//        resume.addContact(ContactType.PHONE, "11111");
-//        resume.addContact(ContactType.SKYPE, "skype2");
+        resume.addContact(ContactType.MAIL, "mail1@ya.ru");
+        resume.addContact(ContactType.PHONE, "11111");
+        resume.addContact(ContactType.SKYPE, "skype2");
 //        resume.addSection(SectionType.OBJECTIVE, new TextSection("Objective1"));
 //        resume.addSection(SectionType.PERSONAL, new TextSection("Personal data"));
 //        resume.addSection(SectionType.ACHIEVEMENT, new ListSection("Achivment11", "Achivment12", "Achivment13"));

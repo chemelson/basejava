@@ -96,12 +96,12 @@ public class SqlStorage implements Storage {
                 contacts.forEach(resume::addContact);
             }
         });
-        return allResumes;
+        return new ArrayList<>(allResumes);
     }
 
     private List<Resume> getResumesOnly() {
         return helper.execute("SELECT * FROM resume r ORDER BY r.uuid ASC", ps -> {
-            List<Resume> resumes = new LinkedList<>();
+            List<Resume> resumes = new ArrayList<>();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
                 String uuid = rs.getString("uuid").trim();
@@ -120,13 +120,8 @@ public class SqlStorage implements Storage {
                 String uuid = rs.getString("resume_uuid");
                 String value = rs.getString("value");
                 String type = rs.getString("type");
-                Map<ContactType, String> contacts = allContacts.get(uuid);
-                if (contacts != null) {
-                    contacts.put(ContactType.valueOf(type), value);
-                } else {
-                    contacts = new HashMap<>();
-                    allContacts.put(uuid, contacts);
-                }
+                Map<ContactType, String> contacts = allContacts.computeIfAbsent(uuid, k -> new HashMap<>());
+                contacts.put(ContactType.valueOf(type), value);
             }
             return allContacts;
         });
