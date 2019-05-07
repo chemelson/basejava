@@ -6,10 +6,6 @@ import ru.javawebinar.basejava.sql.SqlHelper;
 
 import java.sql.*;
 import java.util.*;
-import java.util.function.BiConsumer;
-import java.util.function.BiFunction;
-import java.util.function.Consumer;
-import java.util.function.Function;
 
 public class SqlStorage implements Storage {
 
@@ -93,9 +89,9 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        List<Resume> allResumes = getResumesOnly();
-        Map<String, Map<ContactType, String>> allContacts = getContactsOnly();
-        Map<String, Map<SectionType, AbstractSection>> allSections = getSectionsOnly();
+        List<Resume> allResumes = getResumes();
+        Map<String, Map<ContactType, String>> allContacts = getContacts();
+        Map<String, Map<SectionType, AbstractSection>> allSections = getSections();
         allResumes.forEach(resume -> {
             Map<ContactType, String> contacts = allContacts.get(resume.getUuid());
             if (contacts != null) {
@@ -109,7 +105,7 @@ public class SqlStorage implements Storage {
         return new ArrayList<>(allResumes);
     }
 
-    private List<Resume> getResumesOnly() {
+    private List<Resume> getResumes() {
         return helper.execute("SELECT * FROM resume r ORDER BY r.uuid ASC", ps -> {
             List<Resume> resumes = new ArrayList<>();
             ResultSet rs = ps.executeQuery();
@@ -122,7 +118,7 @@ public class SqlStorage implements Storage {
         });
     }
 
-    private Map<String, Map<ContactType, String>> getContactsOnly() {
+    private Map<String, Map<ContactType, String>> getContacts() {
         return helper.execute("SELECT * FROM contact", ps -> {
             Map<String, Map<ContactType, String>> allContacts = new HashMap<>();
             ResultSet rs = ps.executeQuery();
@@ -137,7 +133,7 @@ public class SqlStorage implements Storage {
         });
     }
 
-    private Map<String, Map<SectionType, AbstractSection>> getSectionsOnly() {
+    private Map<String, Map<SectionType, AbstractSection>> getSections() {
         return helper.execute("SELECT * FROM section", ps -> {
             Map<String, Map<SectionType, AbstractSection>> allSections = new HashMap<>();
             ResultSet rs = ps.executeQuery();
