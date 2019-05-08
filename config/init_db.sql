@@ -6,8 +6,6 @@ create table resume
   full_name text not null
 );
 
-alter table resume owner to admin;
-
 create table contact
 (
   id serial not null constraint contact_pk primary key,
@@ -15,8 +13,6 @@ create table contact
   type text not null,
   value text not null
 );
-
-alter table contact owner to admin;
 
 create unique index contact_uuid_type_index
   on contact (resume_uuid, type);
@@ -28,8 +24,6 @@ create table section
   type text not null,
   value text not null
 );
-
-alter table section owner to admin;
 
 create unique index section_uuid_type_index
     on section (resume_uuid, type);

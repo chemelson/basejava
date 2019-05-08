@@ -4,8 +4,14 @@ import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.*;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
-import java.sql.*;
-import java.util.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SqlStorage implements Storage {
 
@@ -32,9 +38,9 @@ public class SqlStorage implements Storage {
                 }
             }
 
-            deleteAttributes(resume, "contact");
+            deleteContacts(conn, resume);
             insertContacts(conn, resume);
-            deleteAttributes(resume, "section");
+            deleteSections(conn, resume);
             insertSections(conn, resume);
             return null;
         });
@@ -89,24 +95,27 @@ public class SqlStorage implements Storage {
 
     @Override
     public List<Resume> getAllSorted() {
-        List<Resume> allResumes = getResumes();
-        Map<String, Map<ContactType, String>> allContacts = getContacts();
-        Map<String, Map<SectionType, AbstractSection>> allSections = getSections();
-        allResumes.forEach(resume -> {
-            Map<ContactType, String> contacts = allContacts.get(resume.getUuid());
-            if (contacts != null) {
-                contacts.forEach(resume::addContact);
-            }
-            Map<SectionType, AbstractSection> sections = allSections.get(resume.getUuid());
-            if (sections != null) {
-                sections.forEach(resume::addSection);
-            }
+        return helper.transactionalExecute(conn -> {
+            List<Resume> allResumes = getResumes(conn);
+            Map<String, Map<ContactType, String>> allContacts = getContacts(conn);
+            Map<String, Map<SectionType, AbstractSection>> allSections = getSections(conn);
+            allResumes.forEach(resume -> {
+                String uuid = resume.getUuid();
+                Map<ContactType, String> contacts = allContacts.get(uuid);
+                if (contacts != null) {
+                    resume.setContacts(contacts);
+                }
+                Map<SectionType, AbstractSection> sections = allSections.get(uuid);
+                if (sections != null) {
+                    resume.setSections(sections);
+                }
+            });
+            return new ArrayList<>(allResumes);
         });
-        return new ArrayList<>(allResumes);
     }
 
-    private List<Resume> getResumes() {
-        return helper.execute("SELECT * FROM resume r ORDER BY r.uuid ASC", ps -> {
+    private List<Resume> getResumes(Connection conn) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM resume r ORDER BY r.uuid ASC")) {
             List<Resume> resumes = new ArrayList<>();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -115,11 +124,11 @@ public class SqlStorage implements Storage {
                 resumes.add(new Resume(uuid, fullName));
             }
             return resumes;
-        });
+        }
     }
 
-    private Map<String, Map<ContactType, String>> getContacts() {
-        return helper.execute("SELECT * FROM contact", ps -> {
+    private Map<String, Map<ContactType, String>> getContacts(Connection conn) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM contact")) {
             Map<String, Map<ContactType, String>> allContacts = new HashMap<>();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -130,11 +139,11 @@ public class SqlStorage implements Storage {
                 contacts.put(ContactType.valueOf(type), value);
             }
             return allContacts;
-        });
+        }
     }
 
-    private Map<String, Map<SectionType, AbstractSection>> getSections() {
-        return helper.execute("SELECT * FROM section", ps -> {
+    private Map<String, Map<SectionType, AbstractSection>> getSections(Connection conn) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("SELECT * FROM section")) {
             Map<String, Map<SectionType, AbstractSection>> allSections = new HashMap<>();
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
@@ -157,7 +166,7 @@ public class SqlStorage implements Storage {
                 }
             }
             return allSections;
-        });
+        }
     }
 
     @Override
@@ -234,11 +243,20 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void deleteAttributes(Resume resume, String attributeName) {
-        helper.execute("DELETE FROM " + attributeName + " WHERE resume_uuid=?", ps -> {
+    private void deleteAttributes(Connection conn, Resume resume, String attributeName) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM " + attributeName + " WHERE resume_uuid=?")) {
             ps.setString(1, resume.getUuid());
             ps.execute();
-            return null;
-        });
+        }
     }
+
+    private void deleteContacts(Connection conn, Resume resume) throws SQLException {
+        deleteAttributes(conn, resume, "contact");
+    }
+
+    private void deleteSections(Connection conn, Resume resume) throws SQLException {
+        deleteAttributes(conn, resume, "section");
+    }
+
+
 }
