@@ -8,10 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class SqlStorage implements Storage {
 
@@ -135,7 +132,8 @@ public class SqlStorage implements Storage {
                 String uuid = rs.getString("resume_uuid");
                 String value = rs.getString("value");
                 String type = rs.getString("type");
-                Map<ContactType, String> contacts = allContacts.computeIfAbsent(uuid, k -> new HashMap<>());
+                Map<ContactType, String> contacts = allContacts.computeIfAbsent(
+                        uuid, k -> new EnumMap<>(ContactType.class));
                 contacts.put(ContactType.valueOf(type), value);
             }
             return allContacts;
@@ -151,7 +149,8 @@ public class SqlStorage implements Storage {
                 String value = rs.getString("value");
                 String type = rs.getString("type");
                 SectionType sectionType = SectionType.valueOf(type);
-                Map<SectionType, AbstractSection> sections = allSections.computeIfAbsent(uuid, k -> new HashMap<>());
+                Map<SectionType, AbstractSection> sections = allSections.computeIfAbsent(
+                        uuid, k -> new EnumMap<>(SectionType.class));
                 switch (sectionType) {
                     case PERSONAL:
                     case OBJECTIVE:
@@ -243,19 +242,19 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void deleteAttributes(Connection conn, Resume resume, String attributeName) throws SQLException {
-        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM " + attributeName + " WHERE resume_uuid=?")) {
+    private void deleteAttributes(Connection conn, Resume resume, String query) throws SQLException {
+        try (PreparedStatement ps = conn.prepareStatement(query)) {
             ps.setString(1, resume.getUuid());
             ps.execute();
         }
     }
 
     private void deleteContacts(Connection conn, Resume resume) throws SQLException {
-        deleteAttributes(conn, resume, "contact");
+        deleteAttributes(conn, resume, "DELETE FROM contact WHERE resume_uuid = ?");
     }
 
     private void deleteSections(Connection conn, Resume resume) throws SQLException {
-        deleteAttributes(conn, resume, "section");
+        deleteAttributes(conn, resume, "DELETE FROM section WHERE resume_uuid = ?");
     }
 
 
