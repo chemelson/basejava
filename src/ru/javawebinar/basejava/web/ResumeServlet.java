@@ -5,6 +5,7 @@ import ru.javawebinar.basejava.model.Resume;
 import ru.javawebinar.basejava.storage.SqlStorage;
 import ru.javawebinar.basejava.storage.Storage;
 
+import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,7 +15,13 @@ import java.util.List;
 
 public class ResumeServlet extends HttpServlet {
 
-    private static Storage storage = Config.get().getStorage();
+    private Storage storage;
+
+    @Override
+    public void init(ServletConfig config) throws ServletException {
+        super.init(config);
+        storage = Config.get().getStorage();
+    }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
