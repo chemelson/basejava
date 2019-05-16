@@ -18,6 +18,8 @@ public class Resume implements Comparable<Resume>, Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final Resume EMPTY = new Resume();
+
     // Unique identifier
     private String uuid;
 

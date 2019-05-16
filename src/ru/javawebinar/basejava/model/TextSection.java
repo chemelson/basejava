@@ -6,6 +6,8 @@ public class TextSection extends AbstractSection {
 
     private static final long serialVersionUID = 1L;
 
+    public static final TextSection EMPTY = new TextSection("");
+
     private String content;
 
     public TextSection() {
@@ -31,5 +33,10 @@ public class TextSection extends AbstractSection {
     @Override
     public int hashCode() {
         return Objects.hash(content);
+    }
+
+    @Override
+    public String toString() {
+        return content;
     }
 }
